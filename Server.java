@@ -27,18 +27,20 @@ public class Server {
         	Server server = new Server();
 		//This will be used to test client locally, removed later to be replaced with outside app.
         	Client client = new Client();
-	
+
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Type port you would like to use.");
+		port = scanner.nextInt();
+		scanner.close();
+		
 		//Wait for initial connection
         	try {
         		serverSocket = new ServerSocket(port);
         	} 
         	catch (IOException e) {
-        		System.err.println("Could not listen on port: 3200. Error: " + e);
+        		System.err.println("Could not listen on port: " + port + " Error: "+ e);
 			System.exit(1);
         	}
-
-		System.out.println("Type port you would like to use.");
-		Scanner scanner = new Scanner(System.in);
 		
         	//Launch server
 		do{
@@ -60,7 +62,7 @@ public class Server {
         	}             
         
         	input = new Scanner(link.getInputStream()); //incoming data to server
-        	output = new PrintWriter(link.getOutputStream(),true); //outgoing data to client on other side
+        	//output = new PrintWriter(link.getOutputStream(),true); //outgoing data to client on other side
         	System.out.println("Server started, waiting on port 3200. Input and Output ready");
 	    
 		//Listen for handshake
@@ -73,7 +75,8 @@ public class Server {
         	server.rawStringToParse = server.readTextFile();
 		
 		//Send to connected device
-        	server.output.println(server.rawStringToParse);
+        	//server.output.println(server.rawStringToParse);
+		serverSocket.getOutputStream().write(httpResponse.getBytes("UTF-8"));
 		}
     	}
     
