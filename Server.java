@@ -19,6 +19,7 @@ public class Server {
 	PrintWriter output = null; //Sends output from server to client app
 	String rawStringToParse = ""; //String that stores raw data first pulled from feedback.txt file
 	bool keepRunning = true; //Variable to trigger shutdown of server
+	int port;
     
 	public static void main(String[] args) throws Exception {
 
@@ -36,9 +37,12 @@ public class Server {
 			System.exit(1);
         	}
 
+		System.out.println("Type port you would like to use.");
+		Scanner scanner = new Scanner(System.in);
+		
         	//Launch server
 		do{
-        	server.start(3200);
+        	server.start(port);
 		} while (keepRunning); //Need to create condition where variable switches to turn off server
         
 		server.stop();       
