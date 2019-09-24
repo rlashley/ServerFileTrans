@@ -1,2 +1,2 @@
 # serverFileTrans
-A small tool on my web server to send incoming data from my interactive feedback form to my phone
+A small API running on my web server to send stored JSON data from my web page feedback form to my phone
