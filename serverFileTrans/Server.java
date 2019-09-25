@@ -87,7 +87,7 @@ public class Server {
     
 	//This method reads in the text file
 	private String readTextFile() throws IOException {
-    		File file = new File("C:\feedback.txt");
+    		File file = new File("./feedback.txt");
     	
     		BufferedReader reader = new BufferedReader(new FileReader(file));
     		String documentText = "";
