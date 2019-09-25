@@ -1,8 +1,7 @@
-package webpageFeedback;
+package serverFileTrans;
 
 import java.net.*;
 import java.io.*;
-import static java.net.InetAddress.getLocalHost;
 
 public class Client {
 
