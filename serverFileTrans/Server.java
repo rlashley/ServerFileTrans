@@ -22,8 +22,6 @@ public class Server {
 
 		//Create Server class
         Server server = new Server();
-		//This will be used to test client locally, removed later to be replaced with outside app.
-        Client client = new Client();
 
         //Prompt user for port server will run on
 		Scanner scanner = new Scanner(System.in);
@@ -31,20 +29,17 @@ public class Server {
 		server.port = scanner.nextInt();
 		scanner.close();
 		
-		//Wait for initial connection
-        try {
-            server.serverSocket = new ServerSocket(server.port);
-        }
-        catch (IOException e) {
-            System.err.println("Could not listen on port: " + server.port + " Error: "+ e);
-            System.exit(1);
-        }
-		
-        //Launch server
-		do{
-        	server.start(server.port);
-		} while (server.keepRunning); //Need to create condition where variable switches to turn off server
-        
+
+		while (server.keepRunning) {
+			try {
+				//Wait for initial connection
+				server.serverSocket = new ServerSocket(server.port);
+				server.start(server.port);
+			} catch (IOException e) {
+				System.err.println("Could not listen on port: " + server.port + " Error: " + e);
+				System.exit(1);
+			}
+		}
 		server.stop();       
 	}
 	
@@ -57,52 +52,49 @@ public class Server {
         }
         catch(IOException e) {
         	System.err.println("Connection issue on serverSocket. Error: " + e);
-		System.exit(1);
+			System.exit(1);
         }
 
-        Scanner input = new Scanner(link.getInputStream());
         PrintWriter output = new PrintWriter(link.getOutputStream(),true); //outgoing data to client on other side
-        System.out.println("Server started, waiting on port 3200. Input and Output ready");
+		output.println("Connection successful, sending data now...");
+		//Read in feedback txt file.
+		rawStringToParse = readTextFile(); //String that stores raw data first pulled from feedback.txt file
+		//Send to connected device
+		output.println(rawStringToParse);
 
-		//Listen for handshake
-        if(input.hasNext()){
-            if(input.nextInt()==42){
-                keepRunning=false;
-                return;
-            }
-            //When data arrives, take user name and password in encrypted format.
+		//When data arrives, take user name and password in encrypted format.
 
-            //If user name and pass match, send back connection made message
+		//If user name and pass match, send back connection made message
 
-            //Read in feedback txt file.
-            rawStringToParse = readTextFile(); //String that stores raw data first pulled from feedback.txt file
+		InputStream raw = link.getInputStream();
 
-            //Send to connected device
-            output.println(rawStringToParse);
-
-            input.close();
-            output.close();
-		    }
-    	}
+        if(!(raw.read()==-1)){
+			output.close();
+			raw.close();
+			keepRunning=false;
+		}
+	}
     
 	//This method reads in the text file
 	private String readTextFile() throws IOException {
-    		File file = new File("./feedback.txt");
-    	
-    		BufferedReader reader = new BufferedReader(new FileReader(file));
-    		String documentText = "";
-    		try {
-			while(reader.readLine() != null) {
-				documentText+=reader.readLine();
+		String path = "C:\\Users\\rlash\\Documents\\feedback.txt";
+		path = path.replace("\\","/");
+		File file = new File(path);
+		Scanner sc = new Scanner(file);
+		String documentText = "";
+
+		try {
+			while(sc.hasNextLine()) {
+				documentText += (sc.nextLine()+"\n");
 			}
-			} catch (IOException e) {
-				System.err.println(e);
-			}
-    		reader.close();
-    		return documentText;
-    	}
+		} catch (Exception e) {
+			System.err.println(e);
+		}
+		sc.close();
+		return documentText;
+	}
     
-    	//This method stops the server
+	//This method stops the server
 	private void stop() throws Exception {
 		link.close();
 		serverSocket.close();
